@@ -88,6 +88,24 @@ const router = createRouter({
                 path: 'profile',
                 name: 'TenantProfile',
                 component: () => import('../views/tenant/Profile.vue')
+                },
+                {
+                path: 'change-password',
+                component: () => import('../views/tenant/ChangePassword.vue')
+                },
+                { 
+                path: 'reservations', 
+                component: () => import('../views/tenant/Reservations.vue') 
+                },
+                { 
+                path: 'contracts', 
+                component: () => import('../views/tenant/Contracts.vue') 
+                },
+                {
+                    // ✨ 動態路由：:id 代表房子的編號
+                    path: 'rental/:id',
+                    name: 'RentalDetail',
+                    component: () => import('../views/tenant/RentalDetail.vue')
                 }
             ]
         }

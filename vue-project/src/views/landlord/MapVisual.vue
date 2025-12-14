@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref,shallowRef, onMounted } from 'vue'
 
 // 因為沒有使用 Pinia，這裡放一份假資料供地圖使用
 const rentals = ref([
@@ -40,8 +40,8 @@ const rentals = ref([
   { id: 3, title: '火車站附近電梯大樓套房', area: '火車站附近', price: 8000, lat: 23.709, lng: 120.4255, roomType: '套房' }
 ])
 
-const map = ref(null)
-const markers = ref([])
+const map = shallowRef(null)
+const markers = shallowRef([])
 
 const initMap = () => {
   const el = document.getElementById('landlord-map')

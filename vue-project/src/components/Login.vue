@@ -10,7 +10,7 @@
             id="username"
             v-model="username"
             type="text"
-            placeholder="請輸入帳號"
+            placeholder="請輸入帳號(電話號碼)"
           />
         </div>
 
@@ -56,44 +56,66 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router' // 1. 引入 useRouter
+import { useRouter } from 'vue-router'
 
-const router = useRouter() // 2. 建立 router 實例
+const router = useRouter()
 
 const username = ref('')
 const password = ref('')
 const loginRole = ref('')
 
-// 登入邏輯
-const handleLogin = () => {
+// 修改後的登入邏輯
+const handleLogin = async () => {
   if (!username.value || !password.value) {
     alert('請輸入帳號與密碼')
     return
   }
 
   if (!loginRole.value) {
-    alert('請先選擇身分（租客或房東）')
+    alert('請先選擇身分')
     return
   }
 
-  // 3. 改用 router.push 進行頁面跳轉
-  // 注意：這裡的路徑要對應你在 router/index.js 裡設定的 path
-  if (loginRole.value === 'tenant') {
-    router.push('/TenantHome') 
-  } else if (loginRole.value === 'landlord') {
-    router.push('/LandlordHome')
+  try {
+    // 1. 呼叫後端 API
+    const response = await fetch('http://localhost:3000/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value,
+        role: loginRole.value
+      })
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      // 2. ✨ 關鍵步驟：把使用者資料存入 localStorage
+      // 這樣瀏覽器關掉重開，資料還會在
+      localStorage.setItem('currentUser', JSON.stringify(data.user))
+
+      alert(`歡迎回來，${data.user.name}！`)
+
+      // 3. 根據身分跳轉
+      if (data.user.role === 'tenant') {
+        router.push('/TenantHome')
+      } else {
+        router.push('/LandlordHome')
+      }
+    } else {
+      alert('登入失敗：' + data.message)
+    }
+
+  } catch (error) {
+    console.error('Login Error:', error)
+    alert('無法連線到伺服器')
   }
 }
 
-// 跳轉到忘記密碼
-const goToForgotPassword = () => {
-  router.push('/ForgotPassword')
-}
-
-// 跳轉到註冊選擇頁
-const goToRegChoose = () => {
-  router.push('/RegChoose')
-}
+// ... 其他函式 (goToForgotPassword, goToRegChoose) 保持不變
+const goToForgotPassword = () => router.push('/ForgotPassword')
+const goToRegChoose = () => router.push('/RegChoose')
 </script>
 
 <style scoped>

@@ -74,8 +74,13 @@ const toggleMenu = () => {
 }
 
 const handleLogout = () => {
-  isMenuOpen.value = false // 登出前先關閉選單
-  router.push('/Login')
+  if (confirm('確定要登出嗎？')) {
+    // 1. 清除 localStorage
+    localStorage.removeItem('currentUser')
+    
+    // 2. 跳回登入頁
+    router.push('/Login')
+  }
 }
 </script>
 

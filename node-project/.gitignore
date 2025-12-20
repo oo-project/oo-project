@@ -1,0 +1,11 @@
+# 忽略依賴套件 (這包很大，不需要上傳，別人 `npm install` 就有了)
+node_modules/
+
+# 忽略系統產生的垃圾檔 (Mac 使用者常見)
+.DS_Store
+
+# 🛑 資安關鍵：忽略 Firebase 金鑰
+serviceAccountKey.json
+
+# 🛑 資安關鍵：忽略環境變數檔 (這裡面會有你的私鑰)
+.env

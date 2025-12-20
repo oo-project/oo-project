@@ -14,10 +14,14 @@ const serviceAccount = {
 };
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "oo-project-dedbd"
 });
+
+
 
 const db = admin.firestore();
 db.settings({ databaseId: 'oo-base' }); // 如果您有自訂資料庫名稱
+const bucket = admin.storage().bucket();
 
-module.exports = { db, admin };
+module.exports = { db, admin, bucket };

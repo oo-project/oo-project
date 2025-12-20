@@ -23,18 +23,29 @@ const router = createRouter({
         {
             path: '/LandlordHome',
             component: () => import('../views/LandlordHome.vue'),
-            // ✨ 修改重點 1：加入 meta 設定，標記此區塊需要權限
             meta: { requiresAuth: true, role: 'landlord' },
             children: [
                 {
                     path: '',
                     redirect: '/LandlordHome/rent'
                 },
+                // --- 租件管理相關 (整合在一起) ---
                 {
                     path: 'rent',
                     name: 'LandlordRent',
-                    component: () => import('../views/landlord/Rentals.vue')
+                    component: () => import('../views/landlord/Rentals.vue') // 列表頁
                 },
+                {
+                    path: 'rent/new',
+                    name: 'LandlordRentNew',
+                    component: () => import('../views/landlord/RentalEditor.vue') // 新增頁
+                },
+                {
+                    path: 'rent/edit/:id',
+                    name: 'LandlordRentEdit',
+                    component: () => import('../views/landlord/RentalEditor.vue') // 編輯頁
+                },
+                // -------------------------------
                 {
                     path: 'lease',
                     name: 'LandlordLease',
@@ -78,7 +89,6 @@ const router = createRouter({
         {
             path: '/TenantHome',
             component: () => import('../views/TenantHome.vue'),
-            // ✨ 修改重點 2：加入 meta 設定，標記此區塊需要權限
             meta: { requiresAuth: true, role: 'tenant' },
             children: [
                 {
@@ -116,6 +126,11 @@ const router = createRouter({
                     path: 'rental/:id',
                     name: 'RentalDetail',
                     component: () => import('../views/tenant/RentalDetail.vue')
+                },
+                {
+                    path: 'map',
+                    name: 'TenantMap',
+                    component: () => import('../views/tenant/MapSearch.vue')
                 }
             ]
         }
@@ -123,32 +138,23 @@ const router = createRouter({
 })
 
 // ==========================================
-// ✨ 修改重點 3：加入全域導航守衛 (警衛)
+// 全域導航守衛 (完全正確，不用改)
 // ==========================================
 router.beforeEach((to, from, next) => {
-    // 1. 取得目前 localStorage 裡的使用者資料
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-    // 2. 檢查要去的頁面 (to) 是否需要驗證 (requiresAuth)
-    // to.matched 會包含父路由資訊，確保子路由也能被保護
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     
-    // 3. 如果需要驗證
     if (requiresAuth) {
-        // 情況 A：根本沒登入
         if (!currentUser) {
             alert('請先登入！');
-            next('/Login'); // 踢回登入頁
+            next('/Login');
             return;
         }
 
-        // 情況 B：有登入，但身分不對 (例如租客想偷看房東頁面)
-        // 取得該頁面要求的角色 (從父路由 meta 拿)
         const requiredRole = to.matched.find(record => record.meta.role)?.meta.role;
 
         if (requiredRole && currentUser.role !== requiredRole) {
             alert('您沒有權限訪問此頁面！');
-            // 根據他原本的身分，踢回屬於他的首頁
             if (currentUser.role === 'landlord') {
                 next('/LandlordHome');
             } else {
@@ -156,13 +162,8 @@ router.beforeEach((to, from, next) => {
             }
             return;
         }
-
-        // 情況 C：登入且身分正確 -> 放行
         next();
     } else {
-        // 4. 不需要驗證的頁面 (如 Login, Register) -> 直接放行
-        
-        // (選擇性優化) 如果已經登入，還想去 Login 頁，直接導向首頁
         if (to.path === '/Login' && currentUser) {
              if (currentUser.role === 'landlord') {
                 next('/LandlordHome');
@@ -171,7 +172,6 @@ router.beforeEach((to, from, next) => {
             }
             return;
         }
-
         next();
     }
 });

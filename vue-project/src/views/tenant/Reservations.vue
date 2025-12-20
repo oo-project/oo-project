@@ -54,34 +54,54 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
-const reservations = ref([
-  {
-    id: 1,
-    rentalTitle: '雲科大旁溫馨套房',
-    landlordName: '王先生',
-    time: '2025/12/20 (六) 14:00',
-    status: 'pending', // 待確認
-    note: '希望能看頂樓曬衣場'
-  },
-  {
-    id: 2,
-    rentalTitle: '斗六市區採光雅房',
-    landlordName: '陳小姐',
-    time: '2025/12/22 (一) 10:30',
-    status: 'confirmed', // 預約成功
-    note: ''
+// 1. 定義預約列表，初始為空陣列
+const reservations = ref([])
+// 定義後端 API 網址 (記得對應後端的 PORT)
+const API_URL = 'http://localhost:3000/api/reservations'
+
+// 2. 取得資料的函式
+const fetchReservations = async () => {
+  try {
+    const response = await fetch(API_URL)
+    const data = await response.json()
+    reservations.value = data // 將後端傳回的資料放入變數
+  } catch (error) {
+    console.error('取得資料失敗:', error)
+    alert('無法載入預約資料，請檢查後端是否開啟')
   }
-])
+}
+
+// 3. 頁面載入完成後，執行抓取資料
+onMounted(() => {
+  fetchReservations()
+})
 
 const contactLandlord = (item) => {
   alert(`開啟與 ${item.landlordName} 的聊天室...`)
 }
 
-const cancelReservation = (id) => {
-  if (confirm('確定要取消這個預約嗎？')) {
-    reservations.value = reservations.value.filter(r => r.id !== id)
+// 4. 取消預約 (串接 DELETE API)
+const cancelReservation = async (id) => {
+  if (!confirm('確定要取消這個預約嗎？')) return
+
+  try {
+    // 發送 DELETE 請求給後端
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: 'DELETE'
+    })
+    
+    if (response.ok) {
+      // 如果後端刪除成功，前端也更新畫面
+      reservations.value = reservations.value.filter(r => r.id !== id)
+      alert('預約已取消')
+    } else {
+      alert('取消失敗，請稍後再試')
+    }
+  } catch (error) {
+    console.error('刪除錯誤:', error)
+    alert('網路錯誤，無法取消')
   }
 }
 </script>

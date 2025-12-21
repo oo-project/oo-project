@@ -1,245 +1,332 @@
 <template>
-  <div class="browse-layout">
-    <button class="mobile-filter-toggle" @click="isFilterOpen = !isFilterOpen">
-      {{ isFilterOpen ? '▲ 收起篩選條件' : '▼ 開啟篩選條件' }}
-    </button>
-
-    <section class="filters" :class="{ 'mobile-hidden': !isFilterOpen }">
-      <h2 class="section-title">條件篩選</h2>
-
-      <div class="filter-group">
-        <label class="filter-label">關鍵字</label>
-        <input v-model="filters.keyword" type="text" placeholder="輸入地點、房源名稱..." />
+  <div class="browse-container">
+    
+    <section class="control-panel">
+      
+      <div class="search-top">
+        <div class="search-input-box">
+          <span class="search-icon">🔍</span>
+          <input 
+            v-model="filters.keyword" 
+            type="text" 
+            placeholder="輸入區域、捷運或關鍵字..." 
+          />
+          <button class="clear-btn" v-if="filters.keyword" @click="filters.keyword=''">✕</button>
+        </div>
+        
+        <button class="toggle-filter-btn" @click="showAdvanced = !showAdvanced" :class="{ active: showAdvanced }">
+          <span class="icon">⚙️</span> 進階篩選
+        </button>
       </div>
 
-      <div class="filter-group">
-        <label class="filter-label">地區</label>
-        <select v-model="filters.area">
-          <option value="">不限</option>
-          <option value="雲科大周邊">雲科大周邊</option>
-          <option value="斗六市區">斗六市區</option>
-          <option value="火車站附近">火車站附近</option>
-        </select>
-      </div>
+      <transition name="slide-fade">
+        <div v-if="showAdvanced" class="advanced-options">
+          
+          <div class="filter-row">
+            <div class="filter-group">
+              <label>房屋類型</label>
+              <div class="type-buttons">
+                <button 
+                  v-for="type in ['全部', '獨立套房', '分租套房', '雅房', '整層住家']"
+                  :key="type"
+                  class="type-btn"
+                  :class="{ active: filters.type === (type === '全部' ? '' : type) }"
+                  @click="filters.type = (type === '全部' ? '' : type)"
+                >
+                  {{ type }}
+                </button>
+              </div>
+            </div>
 
-      <div class="filter-group">
-        <label class="filter-label">房型</label>
-        <select v-model="filters.roomType">
-          <option value="">不限</option>
-          <option value="雅房">雅房</option>
-          <option value="套房">套房</option>
-          <option value="整層">整層</option>
-        </select>
-      </div>
+            <div class="filter-group">
+              <label>排序方式</label>
+              <select v-model="filters.sortBy" class="custom-select">
+                <option value="newest">📅 最新上架</option>
+                <option value="price_asc">💰 價格：低 → 高</option>
+                <option value="price_desc">💎 價格：高 → 低</option>
+              </select>
+            </div>
+          </div>
 
-      <div class="filter-group">
-        <label class="filter-label">價格範圍</label>
-        <select v-model="filters.priceRange">
-          <option value="">不限</option>
-          <option value="low">5000 以下</option>
-          <option value="mid">5000 - 8000</option>
-          <option value="high">8000 以上</option>
-        </select>
-      </div>
+          <div class="filter-row">
+            <div class="filter-group">
+              <label>租金範圍 (元)</label>
+              <div class="price-inputs">
+                <input v-model.number="filters.minPrice" type="number" placeholder="最低" />
+                <span class="divider">~</span>
+                <input v-model.number="filters.maxPrice" type="number" placeholder="最高" />
+              </div>
+            </div>
+            
+            <div class="filter-group end">
+              <button class="reset-btn" @click="resetFilters">↺ 清除條件</button>
+            </div>
+          </div>
 
-      <div class="filter-group">
-        <span class="filter-label">設備需求</span>
-        <label class="checkbox">
-          <input type="checkbox" v-model="filters.withInternet" /> 有網路
-        </label>
-        <label class="checkbox">
-          <input type="checkbox" v-model="filters.withWasher" /> 有洗衣機
-        </label>
-        <label class="checkbox">
-          <input type="checkbox" v-model="filters.withAC" /> 有冷氣
-        </label>
-      </div>
+        </div>
+      </transition>
 
-      <button class="reset-btn" @click="resetFilters">清除條件</button>
+      <div class="result-count">
+        共找到 <b>{{ filteredRentals.length }}</b> 筆房源
+      </div>
     </section>
 
-    <section class="listing-section">
-      <h2 class="section-title">推薦房源 ({{ filteredListings.length }})</h2>
+    <section class="rentals-list">
       
-      <div class="listing-grid">
-        <article v-for="house in filteredListings" :key="house.id" class="listing-card">
-          <div class="listing-header">
-            <h3 class="listing-title">{{ house.title }}</h3>
-            <button class="favorite-btn" :class="{ active: isFavorite(house.id) }" @click="toggleFavorite(house.id)">
-              {{ isFavorite(house.id) ? '♥' : '♡' }}
-            </button>
-          </div>
-
-          <p class="listing-price">{{ house.price.toLocaleString() }} 元/月</p>
-          <p class="listing-meta">
-            {{ house.area }} · {{ house.roomType }} · 約 {{ house.distance }} 分
-          </p>
-
-          <div class="tags">
-            <span v-for="tag in house.tags" :key="tag" class="tag">{{ tag }}</span>
-          </div>
-
-          <div class="listing-footer">
-            <button class="secondary-btn" @click="showDetail(house)">詳情</button>
-            <button class="primary-outline-btn" @click="contactLandlord(house)">聯絡</button>
-          </div>
-        </article>
+      <div v-if="loading" class="loading-state">
+        <div class="spinner"></div> 資料載入中...
       </div>
+
+      <div v-else-if="filteredRentals.length === 0" class="empty-state">
+        <span class="empty-icon">🧐</span>
+        <p>沒有符合條件的房子，試著放寬篩選條件看看？</p>
+        <button class="retry-btn" @click="resetFilters">顯示所有房源</button>
+      </div>
+
+      <article 
+        v-for="item in filteredRentals" 
+        :key="item.id" 
+        class="rental-card"
+        @click="goToDetail(item.id)"
+      >
+        <div class="card-left">
+          <img 
+            :src="item.images && item.images.length > 0 ? item.images[0] : defaultImage" 
+            alt="房源照片" 
+            class="rental-img"
+          />
+          <span class="type-tag">{{ item.type }}</span>
+        </div>
+
+        <div class="card-right">
+          <div class="info-top">
+            <h3 class="card-title">{{ item.title }}</h3>
+            <div class="price-box">
+              <span class="price-val">$ {{ Number(item.price).toLocaleString() }}</span>
+              <span class="price-unit">/月</span>
+            </div>
+          </div>
+
+          <div class="info-middle">
+            <p class="address-row">📍 {{ item.address }}</p>
+            <p class="meta-row">
+              {{ item.area }} 坪 · {{ item.floor }}F · {{ item.roomType || '不限' }}
+            </p>
+          </div>
+          
+          <div class="info-bottom">
+            <div class="amenities-row">
+              <span v-for="(am, idx) in item.amenities.slice(0, 3)" :key="idx" class="mini-tag">
+                {{ am }}
+              </span>
+              <span v-if="item.amenities.length > 3" class="mini-tag">+{{ item.amenities.length - 3 }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
     </section>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-// ✨ 控制手機版篩選區是否展開 (預設 false 收起)
-const isFilterOpen = ref(false)
 const router = useRouter()
-// ... (以下資料和邏輯保持不變，不用動) ...
-const listings = ref([
-  { id: 1, title: '雲科大旁溫馨雅房', area: '雲科大周邊', price: 5500, roomType: '雅房', distance: 5, tags: ['含水費', '含網路', '有冷氣'], landlordName: '王先生', landlordPhone: '0912-345-678' },
-  { id: 2, title: '斗六市區採光套房', area: '斗六市區', price: 7000, roomType: '套房', distance: 10, tags: ['獨立衛浴', '近公車站', '有洗衣機'], landlordName: '陳小姐', landlordPhone: '0987-111-222' },
-  { id: 3, title: '火車站附近電梯大樓套房', area: '火車站附近', price: 8500, roomType: '套房', distance: 8, tags: ['電梯大樓', '可機車位', '含管理費'], landlordName: '林先生', landlordPhone: '0933-222-333' },
-  { id: 4, title: '雲科大旁學生友善整層出租', area: '雲科大周邊', price: 12000, roomType: '整層', distance: 6, tags: ['適合多人合租', '可開伙', '近學餐'], landlordName: '張先生', landlordPhone: '0955-444-555' }
-])
+const rentals = ref([])
+const loading = ref(true)
+const defaultImage = 'https://cdn-icons-png.flaticon.com/512/609/609803.png'
 
-const favoriteIds = ref(new Set())
-const filters = ref({ keyword: '', area: '', roomType: '', priceRange: '', withInternet: false, withWasher: false, withAC: false })
+// ✨ 控制進階選單顯示
+const showAdvanced = ref(false)
 
-const isFavorite = (id) => favoriteIds.value.has(id)
-const toggleFavorite = (id) => {
-  const set = favoriteIds.value
-  if (set.has(id)) set.delete(id)
-  else set.add(id)
-  favoriteIds.value = new Set(set)
-}
-
-const filteredListings = computed(() => {
-  return listings.value.filter((house) => {
-    if (filters.value.keyword) {
-      const kw = filters.value.keyword.toLowerCase()
-      const text = (house.title + house.area).toLowerCase()
-      if (!text.includes(kw)) return false
-    }
-    if (filters.value.area && house.area !== filters.value.area) return false
-    if (filters.value.roomType && house.roomType !== filters.value.roomType) return false
-    if (filters.value.priceRange === 'low' && house.price >= 5000) return false
-    if (filters.value.priceRange === 'mid' && (house.price < 5000 || house.price > 8000)) return false
-    if (filters.value.priceRange === 'high' && house.price <= 8000) return false
-    if (filters.value.withInternet && !house.tags.includes('含網路')) return false
-    if (filters.value.withWasher && !house.tags.includes('有洗衣機')) return false
-    if (filters.value.withAC && !house.tags.includes('有冷氣')) return false
-    return true
-  })
+// ✨ 整合所有的篩選條件
+const filters = reactive({
+  keyword: '',
+  type: '',
+  minPrice: '',
+  maxPrice: '',
+  sortBy: 'newest' // 預設最新
 })
 
+onMounted(async () => {
+  try {
+    const res = await fetch('http://localhost:3000/api/rentals/public')
+    const json = await res.json()
+    if (json.success) {
+      rentals.value = json.data
+    }
+  } catch (e) {
+    console.error('載入失敗', e)
+  } finally {
+    loading.value = false
+  }
+})
+
+// ✨ 重設所有篩選
 const resetFilters = () => {
-  filters.value = { keyword: '', area: '', roomType: '', priceRange: '', withInternet: false, withWasher: false, withAC: false }
+  filters.keyword = ''
+  filters.type = ''
+  filters.minPrice = ''
+  filters.maxPrice = ''
+  filters.sortBy = 'newest'
 }
-const showDetail = (house) =>{
-  console.log(house.id)
-  router.push({
-    name: 'RentalDetail',
-    params: { id: house.id }
-  })
+
+// ✨✨✨ 核心篩選邏輯 ✨✨✨
+const filteredRentals = computed(() => {
+  // 1. 複製一份原始資料
+  let result = [...rentals.value]
+
+  // 2. 關鍵字過濾
+  if (filters.keyword) {
+    const k = filters.keyword.toLowerCase()
+    result = result.filter(item => 
+      item.title.toLowerCase().includes(k) || 
+      item.address.toLowerCase().includes(k)
+    )
+  }
+
+  // 3. 房型過濾
+  if (filters.type) {
+    result = result.filter(item => item.type === filters.type)
+  }
+
+  // 4. 價格範圍過濾
+  if (filters.minPrice) {
+    result = result.filter(item => Number(item.price) >= Number(filters.minPrice))
+  }
+  if (filters.maxPrice) {
+    result = result.filter(item => Number(item.price) <= Number(filters.maxPrice))
+  }
+
+  // 5. 排序邏輯
+  if (filters.sortBy === 'price_asc') {
+    result.sort((a, b) => Number(a.price) - Number(b.price)) // 便宜的在前面
+  } else if (filters.sortBy === 'price_desc') {
+    result.sort((a, b) => Number(b.price) - Number(a.price)) // 貴的在前面
+  } else {
+    // 預設 newest (假設後端有給 createdAt，字串比對即可，或是依陣列順序)
+    // 這裡如果不確定 createdAt 格式，可以先不動，因為後端撈出來預設就是新的在前面
+  }
+
+  return result
+})
+
+const goToDetail = (id) => {
+  router.push(`/TenantHome/rental/${id}`)
 }
-const contactLandlord = (house) => alert(`房東：${house.landlordName}`)
 </script>
 
 <style scoped>
-/* --- 共用樣式 --- */
-.browse-layout {
-  display: grid;
-  grid-template-columns: 270px 1fr; /* 電腦版：左側固定，右側自適應 */
-  gap: 16px;
-  align-items: start;
+.browse-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: "Iansui", sans-serif;
+  padding-bottom: 80px;
 }
 
-.mobile-filter-toggle {
-  display: none; /* 電腦版隱藏這顆按鈕 */
+/* --- 控制面板樣式 --- */
+.control-panel {
+  background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 24px; overflow: hidden;
 }
 
-/* 篩選區塊 */
-.filters {
-  background: #fffaf5;
-  border-radius: 16px;
-  padding: 16px;
-  height: fit-content;
-  box-shadow: 0 4px 14px rgba(46, 38, 34, 0.12);
+.search-top {
+  display: flex; gap: 12px; padding: 16px; align-items: center;
+}
+.search-input-box {
+  flex: 1; display: flex; align-items: center; background: #f3f4f6;
+  padding: 10px 16px; border-radius: 50px; border: 1px solid transparent; transition: 0.2s;
+}
+.search-input-box:focus-within { background: white; border-color: #a18c7b; box-shadow: 0 0 0 3px rgba(161, 140, 123, 0.1); }
+.search-input-box input { border: none; background: transparent; width: 100%; margin-left: 8px; outline: none; font-size: 15px; }
+.clear-btn { border: none; background: transparent; color: #999; cursor: pointer; font-size: 14px; }
+
+.toggle-filter-btn {
+  white-space: nowrap; padding: 10px 16px; border-radius: 50px; border: 1px solid #e5e7eb;
+  background: white; cursor: pointer; font-weight: 600; color: #4b5563; transition: 0.2s; display: flex; align-items: center; gap: 6px;
+}
+.toggle-filter-btn:hover, .toggle-filter-btn.active { background: #fdf6ed; border-color: #a18c7b; color: #a18c7b; }
+
+/* 進階選項區 */
+.advanced-options {
+  background: #fafafa; border-top: 1px solid #eee; padding: 20px;
+}
+.filter-row { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 16px; }
+.filter-row:last-child { margin-bottom: 0; }
+
+.filter-group { display: flex; flex-direction: column; gap: 8px; }
+.filter-group label { font-size: 13px; font-weight: 600; color: #6b7280; }
+.filter-group.end { margin-left: auto; justify-content: flex-end; }
+
+/* 房型按鈕 */
+.type-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.type-btn {
+  padding: 6px 12px; border: 1px solid #d1c7bf; background: white; border-radius: 6px;
+  cursor: pointer; font-size: 13px; color: #555; transition: 0.2s;
+}
+.type-btn.active { background: #a18c7b; color: white; border-color: #a18c7b; }
+
+/* Select & Inputs */
+.custom-select, .price-inputs input {
+  padding: 8px 12px; border: 1px solid #d1c7bf; border-radius: 6px; outline: none; font-size: 14px; background: white;
+}
+.price-inputs { display: flex; align-items: center; gap: 8px; }
+.price-inputs input { width: 100px; }
+.divider { color: #888; }
+
+.reset-btn {
+  background: transparent; border: none; color: #ef4444; font-size: 14px; cursor: pointer; text-decoration: underline;
 }
 
-.section-title { font-size: 18px; font-weight: 600; color: #2e2622; margin-bottom: 10px; }
-.filter-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
-.filter-label { font-size: 13px; color: #4a2c21; }
-.filters input[type="text"], .filters select { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #d1c7bf; box-sizing: border-box; }
-.checkbox { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 4px; }
-.reset-btn { width: 100%; padding: 8px; border-radius: 999px; border: none; background: #e1d4c8; color: #4a2c21; cursor: pointer; }
-
-/* 列表區塊 */
-.listing-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
+.result-count {
+  padding: 10px 20px; background: #fffdf9; border-top: 1px solid #eee; font-size: 13px; color: #888; text-align: right;
 }
-.listing-card { background: #fffdf9; border-radius: 12px; padding: 14px; box-shadow: 0 4px 14px rgba(46, 38, 34, 0.12); border: 1px solid rgba(242, 230, 220, 0.9); }
-.listing-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
-.listing-title { font-size: 16px; font-weight: 600; color: #2e2622; margin: 0; }
-.listing-price { font-size: 18px; font-weight: 700; color: #a18c7b; margin: 4px 0; }
-.listing-meta { font-size: 13px; color: #6b7280; }
-.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
-.tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #f2e6dc; color: #4a2c21; }
-.listing-footer { display: flex; gap: 8px; margin-top: 10px; }
-.secondary-btn, .primary-outline-btn { flex: 1; padding: 6px 0; border-radius: 999px; font-size: 13px; cursor: pointer; }
-.secondary-btn { border: none; background: #e1d4c8; color: #2e2622; }
-.primary-outline-btn { border: 1px solid #a18c7b; background: transparent; color: #4a2c21; }
-.favorite-btn { border: none; background: transparent; font-size: 16px; cursor: pointer; color: #a18c7b; }
 
-/* --- 📱 手機版 RWD 設定 (寬度小於 768px 時生效) --- */
+/* 動畫 */
+.slide-fade-enter-active, .slide-fade-leave-active { transition: all 0.3s ease; max-height: 300px; opacity: 1; }
+.slide-fade-enter-from, .slide-fade-leave-to { max-height: 0; opacity: 0; overflow: hidden; }
+
+/* --- 列表與卡片樣式 (與上一版相同) --- */
+.rentals-list { display: flex; flex-direction: column; gap: 16px; }
+.loading-state, .empty-state { text-align: center; padding: 40px; color: #888; }
+.retry-btn { margin-top: 12px; padding: 8px 16px; background: #4a2c21; color: white; border: none; border-radius: 6px; cursor: pointer; }
+
+.rental-card {
+  display: flex; background: white; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; cursor: pointer; height: 140px; transition: transform 0.2s;
+}
+.rental-card:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); }
+
+.card-left { width: 150px; position: relative; background: #eee; flex-shrink: 0; }
+.rental-img { width: 100%; height: 100%; object-fit: cover; }
+.type-tag { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.6); color: white; font-size: 11px; padding: 2px 6px; border-radius: 4px; }
+
+.card-right { flex: 1; padding: 12px 16px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+.info-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.card-title { font-size: 16px; font-weight: 700; color: #2e2622; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; margin-right: 8px; }
+.price-box { text-align: right; white-space: nowrap; }
+.price-val { font-size: 18px; font-weight: 700; color: #a18c7b; }
+.price-unit { font-size: 12px; color: #9ca3af; }
+.info-middle { font-size: 13px; color: #6b7280; margin-top: 4px; }
+.info-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+.amenities-row { display: flex; gap: 4px; }
+.mini-tag { font-size: 11px; background: #f3f4f6; color: #6b7280; padding: 2px 6px; border-radius: 4px; }
+
+/* RWD */
 @media (max-width: 768px) {
-  .browse-layout {
-    display: flex;       /* 改成垂直排列 */
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  /* 顯示切換按鈕 */
-  .mobile-filter-toggle {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background: #4a2c21;
-    color: #f2e6dc;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 10px;
-  }
-
-  /* 預設隱藏篩選區 (透過 class 控制) */
-  .mobile-hidden {
-    display: none;
-  }
-
-  /* 篩選區展開時的樣式 */
-  .filters {
-    width: 100%;       /* 滿寬 */
-    box-sizing: border-box;
-  }
-
-  /* 調整列表 Grid 為一欄 */
-  .listing-grid {
-    display: grid;
-    grid-template-columns: 1fr; /* 1fr 代表佔滿剩餘空間 */
-    gap: 16px; /* 卡片之間的垂直間距 */
-    width: 100%;
-  }
-  .listing-card {
-    width: 100%;
-    box-sizing: border-box;
-    /* 如果覺得卡片圓角太大，可以在手機版稍微修小一點 */
-    border-radius: 12px; 
-  }
+  .browse-container { padding: 12px; }
+  .search-top { flex-wrap: wrap; }
+  .toggle-filter-btn { width: 100%; justify-content: center; }
+  .filter-row { gap: 16px; }
+  .price-inputs input { width: 80px; }
+  
+  .rental-card { height: 120px; }
+  .card-left { width: 110px; }
+  .card-right { padding: 10px; }
+  .card-title { font-size: 15px; -webkit-line-clamp: 1; }
+  .price-val { font-size: 16px; }
 }
 </style>

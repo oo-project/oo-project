@@ -79,7 +79,7 @@ const fetchMyReservations = async () => {
   try {
     const user = JSON.parse(localStorage.getItem('currentUser'))
     if (!user) return
-    const res = await fetch(`http://localhost:3000/api/appointments/tenant/${user.id}`)
+    const res = await fetch(`https://oo-project.zeabur.app/api/appointments/tenant/${user.id}`)
     const json = await res.json()
     if (json.success) appointments.value = json.data
   } catch (e) { console.error(e) } finally { isLoading.value = false }
@@ -90,7 +90,7 @@ const sendReply = async (id) => {
   if (!msg) return alert('請輸入內容')
 
   try {
-    const res = await fetch(`http://localhost:3000/api/appointments/${id}/message`, {
+    const res = await fetch(`https://oo-project.zeabur.app/api/appointments/${id}/message`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role: 'tenant', message: msg }) // 👈 身份是房客
@@ -111,7 +111,7 @@ const sendReply = async (id) => {
 const cancelAppoint = async (id) => {
   if (!confirm('確定取消？')) return
   try {
-    const res = await fetch(`http://localhost:3000/api/appointments/${id}/status`, {
+    const res = await fetch(`https://oo-project.zeabur.app/api/appointments/${id}/status`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: 'cancelled' })

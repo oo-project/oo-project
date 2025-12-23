@@ -131,7 +131,7 @@ onMounted(async () => {
       // 2. ✨ 呼叫後端 API 取得最新的資料 (包含 bio)
       try {
         // 使用我們剛剛建立的 user API
-        const res = await fetch(`http://localhost:3000/api/user/${user.id}`)
+        const res = await fetch(`https://oo-project.zeabur.app/api/user/${user.id}`)
         const json = await res.json()
         
         if (json.success) {
@@ -186,7 +186,7 @@ const handleSave = async () => {
 
   try {
     // ⚠️ 注意：這裡改成我們剛剛在後端建立的 API 路徑 /api/user/update
-    const response = await fetch('http://localhost:3000/api/user/update', {
+    const response = await fetch('https://oo-project.zeabur.app/api/user/update', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

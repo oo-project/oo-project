@@ -95,7 +95,7 @@ const handleSubmit = async () => {
     const user = JSON.parse(userStr)
 
     // 發送請求
-    const response = await fetch('http://localhost:3000/api/change-password', {
+    const response = await fetch('https://oo-project.zeabur.app/api/change-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

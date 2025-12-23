@@ -208,7 +208,7 @@ const confirmSignature = async () => {
     
     // 2. 呼叫剛剛寫好的後端 API
     // 注意：這裡假設你的後端是 localhost:3000
-    const response = await fetch(`http://localhost:3000/api/contracts/${currentSigningItem.value.id}/sign`, {
+    const response = await fetch(`https://oo-project.zeabur.app/api/contracts/${currentSigningItem.value.id}/sign`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

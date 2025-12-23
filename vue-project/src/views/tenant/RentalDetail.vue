@@ -183,7 +183,7 @@ const currentUser = ref(null)
 onMounted(async () => {
   const rentalId = route.params.id
   try {
-    const res = await fetch(`http://localhost:3000/api/rentals/${rentalId}`)
+    const res = await fetch(`https://oo-project.zeabur.app/api/rentals/${rentalId}`)
     const json = await res.json()
     if (json.success) {
       rental.value = json.data
@@ -232,7 +232,7 @@ const openLandlordModal = async () => {
   }
 
   try {
-    const res = await fetch(`http://localhost:3000/api/user/${landlordId}`)
+    const res = await fetch(`https://oo-project.zeabur.app/api/user/${landlordId}`)
     const json = await res.json()
     
     if (json.success) {

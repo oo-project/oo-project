@@ -76,7 +76,7 @@ onMounted(async () => {
   const user = JSON.parse(userStr)
 
   try {
-    const res = await fetch(`http://localhost:3000/api/rentals/list?landlordId=${user.id}`)
+    const res = await fetch(`https://oo-project.zeabur.app/api/rentals/list?landlordId=${user.id}`)
     const json = await res.json()
     if (json.success) rentals.value = json.data
   } catch (e) { console.error(e) }
@@ -87,7 +87,7 @@ const editRental = (id) => router.push(`/LandlordHome/rent/edit/${id}`)
 const deleteRental = async (id) => {
   if (!confirm('確定要刪除？')) return
   try {
-    const res = await fetch('http://localhost:3000/api/rentals/delete', {
+    const res = await fetch('https://oo-project.zeabur.app/api/rentals/delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })

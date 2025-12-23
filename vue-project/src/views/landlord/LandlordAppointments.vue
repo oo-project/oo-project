@@ -146,7 +146,7 @@ const fetchAppointments = async () => {
     const user = JSON.parse(localStorage.getItem('currentUser'))
     if (!user) return
 
-    const res = await fetch(`http://localhost:3000/api/appointments/landlord/${user.id}`)
+    const res = await fetch(`https://oo-project.zeabur.app/api/appointments/landlord/${user.id}`)
     const json = await res.json()
 
     if (json.success) {
@@ -174,7 +174,7 @@ const sendMessage = async (id) => {
 
   try {
     // 呼叫 addMessage API
-    const res = await fetch(`http://localhost:3000/api/appointments/${id}/message`, {
+    const res = await fetch(`https://oo-project.zeabur.app/api/appointments/${id}/message`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role: 'landlord', message: msg }) // 👈 身份：房東
@@ -223,7 +223,7 @@ const updateStatus = async (id, status) => {
 
   try {
     // 呼叫 updateAppointmentStatus API
-    const res = await fetch(`http://localhost:3000/api/appointments/${id}/status`, {
+    const res = await fetch(`https://oo-project.zeabur.app/api/appointments/${id}/status`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

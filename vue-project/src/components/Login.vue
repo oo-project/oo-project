@@ -78,7 +78,7 @@ const handleLogin = async () => {
 
   try {
     // 1. 呼叫後端 API
-    const response = await fetch('http://localhost:3000/api/login', {
+    const response = await fetch('https://oo-project.zeabur.app/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

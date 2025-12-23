@@ -244,7 +244,7 @@ const registerToBackend = async () => {
     }
 
     // 2. 發送 POST 請求給 Node.js 後端 (Port 3000)
-    const response = await fetch('http://localhost:3000/api/register', {
+    const response = await fetch('https://oo-project.zeabur.app/api/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

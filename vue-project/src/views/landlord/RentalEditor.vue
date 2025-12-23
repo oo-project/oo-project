@@ -156,7 +156,7 @@ const isEditMode = computed(() => !!route.params.id)
 onMounted(async () => {
   // 1. 抓取設施選項
   try {
-    const res = await fetch('http://localhost:3000/api/rentals/amenities')
+    const res = await fetch('https://oo-project.zeabur.app/api/rentals/amenities')
     const json = await res.json()
     if (json.success) {
       amenityOptions.value = json.data
@@ -170,7 +170,7 @@ onMounted(async () => {
   if (isEditMode.value) {
     const rentalId = route.params.id
     try {
-      const res = await fetch(`http://localhost:3000/api/rentals/${rentalId}`)
+      const res = await fetch(`https://oo-project.zeabur.app/api/rentals/${rentalId}`)
       const json = await res.json()
       if (json.success) {
         Object.assign(form, json.data)
@@ -246,8 +246,8 @@ const handleSave = async () => {
   
   try {
     const url = isEditMode.value 
-      ? 'http://localhost:3000/api/rentals/update'
-      : 'http://localhost:3000/api/rentals/add'
+      ? 'https://oo-project.zeabur.app/api/rentals/update'
+      : 'https://oo-project.zeabur.app/api/rentals/add'
 
     const response = await fetch(url, {
       method: 'POST',

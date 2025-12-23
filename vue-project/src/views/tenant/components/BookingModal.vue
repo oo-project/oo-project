@@ -62,7 +62,7 @@ const submitBooking = async () => {
     isSubmitting.value = true
     
     // 呼叫後端 API
-    const res = await fetch('http://localhost:3000/api/appointments/create', {
+    const res = await fetch('https://oo-project.zeabur.app/api/appointments/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

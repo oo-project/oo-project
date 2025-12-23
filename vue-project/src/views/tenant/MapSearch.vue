@@ -90,7 +90,7 @@ const markers = shallowRef([])
 // 🟢 1. 從後端撈資料
 onMounted(async () => {
   try {
-    const res = await fetch('http://localhost:3000/api/rentals/public')
+    const res = await fetch('https://oo-project.zeabur.app/api/rentals/public')
     const json = await res.json()
 
     if (json.success) {

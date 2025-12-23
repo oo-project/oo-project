@@ -141,7 +141,7 @@ const handleSave = async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/api/update-profile', {
+    const response = await fetch('https://oo-project.zeabur.app/api/update-profile', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json' 

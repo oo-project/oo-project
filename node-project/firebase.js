@@ -1,27 +1,26 @@
-const admin = require('firebase-admin');
-require('dotenv').config(); // 記得要這行
+var admin = require("firebase-admin");
+// ★ 引入 getFirestore 用來抓取指定資料庫
+var { getFirestore } = require("firebase-admin/firestore"); 
 
-// 檢查變數有沒有讀到 (除錯用)
-if (!process.env.FIREBASE_PRIVATE_KEY) {
-  console.error('❌ 錯誤：找不到環境變數 FIREBASE_PRIVATE_KEY');
-  process.exit(1);
-}
-
-const serviceAccount = {
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
-};
+var serviceAccount = require("./serviceAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: "oo-project-dedbd"
+  storageBucket: "oo-project-dedbd.firebasestorage.app"
 });
 
-
-
-const db = admin.firestore();
-db.settings({ databaseId: 'oo-base' }); 
+// ★ 關鍵修正：直接在這裡指定資料庫名稱 'oo-base'
+const db = getFirestore('oo-base');
 const bucket = admin.storage().bucket();
+const auth = admin.auth();
 
-module.exports = { db, admin, bucket };
+// 測試連線 (這行會告訴我們到底連去哪了)
+db.listCollections()
+  .then(() => console.log("✅ 成功連線到資料庫：oo-base"))
+  .catch(err => {
+    console.error("❌ 連線失敗！請檢查 serviceAccountKey.json");
+    console.error("錯誤代碼:", err.code); // 應該是 5 NOT_FOUND
+    console.error("錯誤訊息:", err.message);
+  });
+
+module.exports = { admin, db, bucket, auth };

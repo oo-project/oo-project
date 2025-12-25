@@ -1,23 +1,21 @@
-// index.js
 const express = require('express');
 const cors = require('cors');
 // 引入 firebase 設定 (若其他 API 需要 db，可以 const { db } = require('./firebaseConfig');)
 const { db } = require('./firebaseConfig');
 
-// 引入剛剛寫好的路由檔案
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 const contractRoutes = require('./routes/contracts');
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-// 掛載路由
-// 這樣所有在 contractRoutes 裡的網址都會自動加上 /api
-// 例如 router.get('/contracts') 會變成 /api/contracts
+app.use('/api', authRoutes);
 app.use('/api', contractRoutes);
+app.use('/api', userRoutes);
 
 
-// --- 其他非合約的 API (例如: 取得真實房客) 可以留著，或是一樣拆分 ---
 app.get('/api/room-tenants', async (req, res) => {
   try {
     const { rentalId } = req.query;

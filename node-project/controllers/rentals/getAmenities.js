@@ -1,4 +1,4 @@
-const { db } = require('../../firebase');
+const { db } = require('../../firebaseConfig');
 
 const getAmenities = async (req, res) => {
   try {

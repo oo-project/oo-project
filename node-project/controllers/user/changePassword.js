@@ -1,4 +1,4 @@
-const { db } = require('../../firebase');
+const { db } = require('../../firebaseConfig'); // 注意路徑：往上兩層找到 firebaseConfig.js
 
 const changePassword = async (req, res) => {
   console.log('收到修改密碼請求');

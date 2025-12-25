@@ -1,4 +1,4 @@
-const { db, admin } = require('../../firebase');
+const { db, admin } = require('../../firebaseConfig'); // 注意路徑：往上兩層找到 firebaseConfig.js
 
 const updateProfile = async (req, res) => {
   try {

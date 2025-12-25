@@ -1,6 +1,6 @@
-// backend/controllers/rentals/addRental.js
 
-const { db } = require('../../firebase');
+
+const { db } = require('../../firebaseConfig');
 const uploadImage = require('../../utils/uploadImage');
 const getCoordinates = require('../../utils/geocoding'); // ✨ 引入剛剛寫的工具
 

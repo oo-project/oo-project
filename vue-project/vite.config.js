@@ -1,28 +1,26 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
+import VueDevtools from 'vite-plugin-vue-devtools';
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    vueDevTools(),
+    VueDevtools(),
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
-    },
+    }
   },
-
+  // 👇👇👇 關鍵設定：代理伺服器 👇👇👇
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', // 後端的網址與 Port
-        changeOrigin: true,              // 解決跨域問題
-        // 如果後端路由沒有 /api 前綴，可以把下面這行註解打開來去掉 /api
-        // rewrite: (path) => path.replace(/^\/api/, '') 
+        target: 'http://localhost:3000', // 後端網址
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/api/, '') // 這一行通常不用加，除非你後端路由沒寫 /api
       }
     }
   }

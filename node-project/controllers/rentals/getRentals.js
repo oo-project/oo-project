@@ -1,4 +1,4 @@
-const { db } = require('../../firebase');
+const { db } = require('../../firebaseConfig');
 
 const getRentals = async (req, res) => {
   try {

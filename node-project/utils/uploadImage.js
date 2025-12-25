@@ -1,4 +1,4 @@
-const { bucket } = require('../firebase');
+const { bucket } = require('../firebaseConfig');
 const { v4: uuidv4 } = require('uuid'); // 如果沒安裝，請跑 npm install uuid
 
 /**
@@ -11,7 +11,7 @@ const uploadImage = async (base64String) => {
   if (!base64String || base64String.startsWith('http')) {
     return base64String;
   }
-
+  //cd
   return new Promise((resolve, reject) => {
     try {
       // 2. 去除 Base64 的開頭 (data:image/jpeg;base64,...)

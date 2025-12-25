@@ -1,4 +1,4 @@
-const { db } = require('../../firebase');
+const { db } = require('../../firebaseConfig'); // 注意路徑：往上兩層找到 firebaseConfig.js
 
 const login = async (req, res) => {
   console.log('收到登入請求:', req.body);

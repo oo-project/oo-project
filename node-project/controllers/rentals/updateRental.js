@@ -1,4 +1,4 @@
-const { db, admin } = require('../../firebase');
+const { db, admin } = require('../../firebaseConfig');
 const uploadImage = require('../../utils/uploadImage');
 const getCoordinates = require('../../utils/geocoding'); // ✨ 1. 引入 Geocoding 工具
 

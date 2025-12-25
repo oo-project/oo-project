@@ -261,8 +261,8 @@ const fetchRentals = async () => {
   if (!userStr) return
   const user = JSON.parse(userStr)
   try {
-    const res = await fetch(`https://oo-project.zeabur.app/api/rentals/list?landlordId=${user.id}`)
-    const json = await res.json()
+    const response = await api.get(`/api/rentals/list?landlordId=${user.id}`)
+    const json = await response.json()
     if (json.success) rentalOptions.value = json.data
   } catch (e) {
     console.error("房源讀取失敗:", e)

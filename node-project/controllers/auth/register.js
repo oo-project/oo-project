@@ -1,4 +1,4 @@
-const { db, admin } = require('../../firebase'); // 注意路徑：往上兩層找到 firebase.js
+const { db, admin } = require('../../firebaseConfig'); // 注意路徑：往上兩層找到 firebase.js
 
 const register = async (req, res) => {
   console.log('收到註冊請求:', req.body);

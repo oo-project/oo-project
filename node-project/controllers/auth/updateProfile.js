@@ -1,5 +1,4 @@
-// backend/controllers/auth/updateProfile.js
-const { db } = require('../../firebase');
+const { db } = require('../../firebaseConfig'); // 注意路徑：往上兩層找到 firebaseConfig.js
 
 const updateProfile = async (req, res) => {
   console.log('收到更新資料請求'); // 這裡可以看 log 確保有收到長長的圖片字串

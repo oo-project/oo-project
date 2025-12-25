@@ -17,7 +17,7 @@ app.use('/api', authRoutes);
 app.use('/api', contractRoutes);
 app.use('/api', userRoutes);
 app.use('/api/rentals', rentalRoutes);
-app.use('/api', appointmentRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 
 app.get('/api/room-tenants', async (req, res) => {

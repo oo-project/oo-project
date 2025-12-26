@@ -6,7 +6,7 @@ const getMyFavorites = async (req, res) => {
   try {
     const { uid } = req.query;
     if (!uid) return res.status(400).json({ success: false, message: '缺少使用者 ID' });
-
+    console.log(`正在查詢使用者 ${uid} 的收藏...`);
     // 1. 先去 favorites 集合找出該使用者所有的收藏紀錄
     const favSnapshot = await db.collection('favorites')
       .where('uid', '==', uid)
@@ -14,7 +14,9 @@ const getMyFavorites = async (req, res) => {
       .get();
 
     if (favSnapshot.empty) {
+      console.log('該使用者沒有任何收藏紀錄。');
       return res.json({ success: true, data: [] });
+      
     }
 
     // 2. 取得所有收藏的 rentalId
@@ -27,8 +29,11 @@ const getMyFavorites = async (req, res) => {
     // 3. 根據 rentalId 去 rentals 集合抓取詳細房源資料
     // 使用 Promise.all 平行處理多次查詢
     const rentalsPromises = favMap.map(async (item) => {
+      console.log(`嘗試抓取房源詳細資料，ID: ${item.rentalId}`);
       const rentalDoc = await db.collection('rentals').doc(item.rentalId).get();
-      if (!rentalDoc.exists) return null; // 房源可能已被刪除
+      if (!rentalDoc.exists) {
+        console.log(`⚠️ 警告：房源 ${item.rentalId} 在 rentals 集合中不存在！`);
+        return null;} // 房源可能已被刪除
       
       // 回傳合併後的資料：房源資料 + 收藏紀錄的 ID
       return {
@@ -42,7 +47,7 @@ const getMyFavorites = async (req, res) => {
     
     // 過濾掉 null (已刪除的房源)
     const validRentals = results.filter(r => r !== null);
-
+    console.log(`成功找到 ${validRentals.length} 筆有效的收藏租件。`);
     res.json({ success: true, data: validRentals });
 
   } catch (error) {

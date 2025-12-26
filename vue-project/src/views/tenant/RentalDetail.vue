@@ -197,6 +197,7 @@ onMounted(async () => {
     const json = response.data
     if (json.success) {
       rental.value = json.data
+      await checkIfFavorited(rentalId)
     } else {
       error.value = '找不到房源'
     }

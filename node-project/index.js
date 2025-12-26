@@ -12,6 +12,7 @@ const contractsRoutes = require('./routes/contracts');
 const landlordRoutes = require('./routes/landlord');
 const tenantPortalRoutes = require('./routes/tenantPortal');
 const chatRoutes = require('./routes/chat');
+const favoriteRoutes = require('./routes/favorites');
 
 const app = express();
 
@@ -51,7 +52,7 @@ app.use('/api/landlord', landlordRoutes);       // 房東管理
 app.use('/api/tenant/portal', tenantPortalRoutes); // 租客入口
 app.use('/api/landlord/chat', chatRoutes);      // 聊天室
 app.use('/api/rentals', rentalRoutes);          // 房源管理
-
+app.use('/api/favorites', favoriteRoutes);      // 我的收藏
 // ==========================================
 // 4. 啟動伺服器
 // ==========================================

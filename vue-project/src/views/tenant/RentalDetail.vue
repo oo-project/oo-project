@@ -158,7 +158,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-// 👇 請確保已建立此元件
 import BookingModal from './components/BookingModal.vue'
 import api from '@/utils/api'
 const route = useRoute()
@@ -171,6 +170,10 @@ const error = ref('')
 const isFavorite = ref(false)
 const defaultImage = 'https://cdn-icons-png.flaticon.com/512/609/609803.png'
 
+// ❤️ 收藏相關狀態
+const favDocId = ref(null) // 用來存 "收藏紀錄的ID"，刪除時需要它
+const isToggling = ref(false) // 防止連點
+
 // 房東資訊相關
 const showLandlordModal = ref(false)
 const landlordInfo = ref({})
@@ -179,6 +182,13 @@ const landlordInfo = ref({})
 const showBookingModal = ref(false)
 const currentUser = ref(null)
 
+// Helper: 取得當前使用者 ID
+const getCurrentUserId = () => {
+  const userStr = localStorage.getItem('currentUser')
+  if (!userStr) return null
+  const user = JSON.parse(userStr)
+  return user.id || user.uid
+}
 // 🚀 初始化：抓取房源資料
 onMounted(async () => {
   const rentalId = route.params.id
@@ -198,6 +208,63 @@ onMounted(async () => {
   }
 })
 
+// ✨ 檢查收藏狀態 API
+const checkIfFavorited = async (rentalId) => {
+  const uid = getCurrentUserId()
+  if (!uid) return // 沒登入就不用檢查
+
+  try {
+    const res = await api.get(`/api/favorites/check?uid=${uid}&rentalId=${rentalId}`)
+    if (res.data.success && res.data.isFavorite) {
+      isFavorite.value = true
+      favDocId.value = res.data.favDocId// 儲存收藏紀錄 ID
+    }
+  } catch (e) {
+    console.error('檢查收藏失敗', e)
+  }
+}
+
+// ❤️ 切換收藏 (新增/移除)
+const toggleFavorite = async () => {
+  // 1. 檢查登入
+  const uid = getCurrentUserId()
+  if (!uid) {
+    alert('請先登入才能收藏喔！')
+    router.push('/login')
+    return
+  }
+
+  // 防止連點
+  if (isToggling.value) return
+  isToggling.value = true
+
+  try {
+    if (isFavorite.value) {
+      // 🟢 情況 A: 已經收藏 -> 執行移除
+      if (favDocId.value) {
+        await api.delete(`/api/favorites/${favDocId.value}`)
+        isFavorite.value = false
+        favDocId.value = null
+      }
+    } else {
+      // 🔴 情況 B: 尚未收藏 -> 執行新增
+      const res = await api.post('/api/favorites', {
+        uid: uid,
+        rentalId: rental.value.id // 或是 route.params.id
+      })
+      if (res.data.success) {
+        isFavorite.value = true
+        favDocId.value = res.data.favDocId // 記住新產生的 ID
+      }
+    }
+  } catch (e) {
+    console.error('操作失敗', e)
+    alert('網路錯誤，請稍後再試')
+  } finally {
+    isToggling.value = false
+  }
+}
+
 // 🔙 返回
 const goBack = () => router.back()
 
@@ -209,7 +276,7 @@ const shareLink = () => {
 }
 
 // ❤️ 收藏
-const toggleFavorite = () => { isFavorite.value = !isFavorite.value }
+//const toggleFavorite = () => { isFavorite.value = !isFavorite.value }
 
 // 🗺️ 開啟 Google Maps
 const openGoogleMap = () => {

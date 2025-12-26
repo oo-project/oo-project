@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../firebaseConfig'); 
-
+const rentalController = require('../controllers/rentals/rentalController');
 // ==========================================
 // 🛠️ 輔助函式：移除 undefined (防止 500 錯誤)
 // ==========================================
@@ -165,5 +165,7 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+router.get('/:id', rentalController.getRentalById);
+
 
 module.exports = router;

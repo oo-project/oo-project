@@ -44,7 +44,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // 同學的寫法可能會導致前端找不到 /api/auth/login
 
 app.use('/api/auth', authRoutes);               // 登入驗證
-app.use('/api/users', userRoutes);              // 使用者資訊
+app.use('/api/user', userRoutes);              // 使用者資訊
 app.use('/api/room-tenants', tenantsRoutes);    // 房客名單
 app.use('/api/appointments', appointmentRoutes);// 預約看房
 app.use('/api/contracts', contractsRoutes);     // 合約管理

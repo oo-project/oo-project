@@ -7,7 +7,7 @@
       </button>
 
       <div class="logo-area">
-        <span class="logo-icon">🏠</span>
+        <span class="logo-text">E動式神租牌</span>
         <span class="logo-text">房東後台</span>
       </div>
 

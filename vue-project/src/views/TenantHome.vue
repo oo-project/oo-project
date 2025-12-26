@@ -5,8 +5,7 @@
         <span class="menu-icon">☰</span>
       </button>
       <div class="logo-area">
-        <span class="logo-icon">🏡</span>
-        <span class="logo-text">CocoRoom</span>
+        <span class="logo-text">E動式神租牌</span>
       </div>
       <div class="header-placeholder"></div>
     </header>

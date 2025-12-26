@@ -10,7 +10,7 @@ const getMyFavorites = async (req, res) => {
     // 1. 先去 favorites 集合找出該使用者所有的收藏紀錄
     const favSnapshot = await db.collection('favorites')
       .where('uid', '==', uid)
-      .orderBy('createdAt', 'desc')
+      //.orderBy('createdAt', 'desc')
       .get();
 
     if (favSnapshot.empty) {

@@ -13,9 +13,6 @@ const addRental = async (req, res) => {
 
     console.log(`📝 收到新增請求，標題: ${title}`);
 
-    // ==========================================
-    // 步驟 A：處理圖片 (關鍵！防止資料庫爆量)
-    // ==========================================
     let imageUrls = []; 
     
     // 如果有傳圖片 (Base64)，就上傳轉成網址
@@ -31,12 +28,9 @@ const addRental = async (req, res) => {
       }
     }
 
-    // ==========================================
-    // 步驟 B：處理座標 (關鍵！防止欄位消失)
-    // ==========================================
-    // 預設給一個值，確保資料庫欄位一定會存在
-    let finalLat = 23.705; 
-    let finalLng = 120.430;
+
+    let finalLat = 23.690985;
+    let finalLng = 120.527788;
 
     if (address) {
       console.log(`🗺️ 正在轉換地址: ${address}`);
@@ -55,9 +49,6 @@ const addRental = async (req, res) => {
       }
     }
 
-    // ==========================================
-    // 步驟 C：組裝資料並寫入 'houses'
-    // ==========================================
     const newRental = {
       landlordId,
       title,
@@ -83,7 +74,6 @@ const addRental = async (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    // 🔥 寫入您指定的 'houses' 集合
     const docRef = await db.collection('houses').add(newRental);
 
     console.log(`🎉 寫入 houses 成功！ID: ${docRef.id}`);

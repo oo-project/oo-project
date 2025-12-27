@@ -73,7 +73,6 @@ const fetchMyRentals = async () => {
 
       // 1. 檢查 ID 篩選
       const myRentals = allRentals.filter(item => {
-        // 寬鬆比較 (避免數字/字串型別問題)
         return String(item.landlordId) === String(user.id)
       })
       console.log(`bust [Debug] ID 符合的資料有: ${myRentals.length} 筆`)
@@ -134,7 +133,7 @@ const updateMarkers = () => {
     markers.value.push(marker)
   })
 
-  // 自動調整視野 (如果有資料的話)
+  // 自動調整視野
   if (markers.value.length > 0) {
     const bounds = new window.google.maps.LatLngBounds()
     markers.value.forEach(m => bounds.extend(m.getPosition()))

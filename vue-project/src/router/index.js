@@ -8,8 +8,6 @@ const router = createRouter({
             path: '/',
             redirect: '/Login'
         },
-
-        // ✅ Tenant 地圖找房
         {
             path: '/Login',
             name: 'Login',
@@ -19,9 +17,7 @@ const router = createRouter({
             path: '/ForgotPassword',
             component: () => import('../components/ForgotPassword.vue')
         },
-        // ==========================================
         // 房東區塊 (需要登入 + 身分是 landlord)
-        // ==========================================
         {
             path: '/LandlordHome',
             component: () => import('../views/LandlordHome.vue'),
@@ -31,7 +27,6 @@ const router = createRouter({
                     path: '',
                     redirect: '/LandlordHome/rent'
                 },
-                // --- 租件管理相關 (整合在一起) ---
                 {
                     path: 'rent',
                     name: 'LandlordRent',
@@ -47,7 +42,6 @@ const router = createRouter({
                     name: 'LandlordRentEdit',
                     component: () => import('../views/landlord/RentalEditor.vue') // 編輯頁
                 },
-                // -------------------------------
                 {
                     path: 'lease',
                     name: 'LandlordLease',
@@ -95,9 +89,7 @@ const router = createRouter({
             name: 'Register',
             component: () => import('../components/RegisterForm.vue') 
         },
-        // ==========================================
         // 租客區塊 (需要登入 + 身分是 tenant)
-        // ==========================================
         {
             path: '/TenantHome',
             component: () => import('../views/TenantHome.vue'),
@@ -154,9 +146,7 @@ const router = createRouter({
     ]
 })
 
-// ==========================================
-// 全域導航守衛 (完全正確，不用改)
-// ==========================================
+// 全域導航守衛
 router.beforeEach((to, from, next) => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);

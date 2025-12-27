@@ -3,14 +3,11 @@ const router = express.Router();
 const { db } = require('../firebaseConfig');
 
 // 1. 取得特定房源的房客 (通常是從合約反查)
-// 對應前端: /api/room-tenants?rentalId=...
 router.get('/', async (req, res) => {
   try {
     const { rentalId } = req.query;
     if (!rentalId) return res.json([]);
 
-    // 邏輯：去 contracts 集合找，狀態是 'active' 或 'valid' 的合約
-    // 這裡簡化：只要是該房間的合約我們都抓出來看看
     const snapshot = await db.collection('contracts')
       .where('rentalId', '==', rentalId)
       .get();

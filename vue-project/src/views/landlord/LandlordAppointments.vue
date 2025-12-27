@@ -128,7 +128,6 @@
 import { ref, computed, onMounted } from 'vue'
 import api from '@/utils/api'
 
-// --- 狀態變數 ---
 const appointments = ref([])
 const isLoading = ref(true)
 const currentTab = ref('pending') // 預設顯示待處理
@@ -153,7 +152,6 @@ const fetchAppointments = async () => {
     if (json.success) {
       appointments.value = json.data
       
-      // ✨ 初始化：把原本的預約時間填入 confirmDataMap，當作預設值，防止報錯
       json.data.forEach(item => {
         confirmDataMap.value[item.id] = {
           date: item.date || '',
@@ -203,11 +201,9 @@ const sendMessage = async (id) => {
 const updateStatus = async (id, status) => {
   let payload = { status }
 
-  // 如果是按「接受」，必須檢查並帶入最終時間
   if (status === 'confirmed') {
     const finalData = confirmDataMap.value[id]
     
-    // 🔒 防呆檢查
     if (!finalData || !finalData.date || !finalData.time) {
       return alert('請在上方設定「最終成交時間」才能接受預約！')
     }
@@ -222,15 +218,12 @@ const updateStatus = async (id, status) => {
   }
 
   try {
-    // 呼叫 updateAppointmentStatus API
-
     const response = await api.post(`/api/appointments/${id}/status`, payload)
 
     if (response.data.success) {
       const target = appointments.value.find(i => i.id === id)
       if (target) {
         target.status = status
-        // 如果接受，直接把前端顯示的時間改成新的，讓房東知道改成功了
         if (status === 'confirmed') {
           target.date = payload.finalDate
           target.time = payload.finalTime
@@ -248,7 +241,6 @@ const updateStatus = async (id, status) => {
 const filteredList = computed(() => {
   if (currentTab.value === 'all') return appointments.value
   if (currentTab.value === 'pending') {
-    // 待處理包含：待確認(pending) 和 協調中(negotiating)
     return appointments.value.filter(i => ['pending', 'negotiating'].includes(i.status))
   }
   return appointments.value.filter(i => i.status === currentTab.value)

@@ -107,7 +107,7 @@ const selectedRental = ref({}) // 暫存被點選的那一筆資料
 
 const landlordFavorites = ref(new Set())
 
-// 1. ✨ 核心功能：從後端抓取所有公開租件
+// 1. 從後端抓取所有公開租件
 const fetchPublicRentals = async () => {
   try {
     isLoading.value = true
@@ -120,7 +120,7 @@ const fetchPublicRentals = async () => {
     const json = response.data
 
     if (json.success) {
-      // 2. ✨ 關鍵修改：過濾掉自己的租件
+      // 2.過濾掉自己的租件
       let rawData = json.data
       
       if (currentUser) {
@@ -143,12 +143,11 @@ const fetchPublicRentals = async () => {
   }
 }
 
-// 2. 搜尋過濾邏輯 (維持不變)
+// 2. 搜尋過濾邏輯
 const filteredSearchListings = computed(() => {
   if (!searchKeyword.value) return searchListings.value
   const kw = searchKeyword.value.toLowerCase()
   return searchListings.value.filter((item) => {
-    // 串接所有想搜尋的文字欄位
     const content = (
       (item.title || '') + 
       (item.area || '') + 
@@ -159,7 +158,7 @@ const filteredSearchListings = computed(() => {
   })
 })
 
-// 3. 收藏功能 (目前暫存於前端記憶體，重整會消失)
+// 3. 收藏功能
 const toggleFavorite = (id) => {
   const set = landlordFavorites.value
   if (set.has(id)) set.delete(id)
@@ -167,18 +166,14 @@ const toggleFavorite = (id) => {
   landlordFavorites.value = new Set(set)
 }
 
-// 👇 新增：打開詳情
 const openDetail = (item) => {
   selectedRental.value = item
   showModal.value = true
-  // 禁止背景捲動
   document.body.style.overflow = 'hidden'
 }
 
-// 👇 新增：關閉詳情
 const closeDetail = () => {
   showModal.value = false
-  // 恢復背景捲動
   document.body.style.overflow = ''
 }
 
@@ -189,9 +184,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* =========================================
-   1. 外框容器 (Panel)
-   ========================================= */
+/* 1. 外框容器 (Panel)*/
 .panel {
   max-width: 1100px;
   margin: 0 auto;
@@ -215,9 +208,7 @@ onMounted(() => {
   margin-top: 4px;
 }
 
-/* =========================================
-   2. 搜尋列 (Search Bar)
-   ========================================= */
+/*2. 搜尋列 (Search Bar)*/
 .search-bar {
   margin-top: 10px;
   margin-bottom: 8px;
@@ -239,9 +230,8 @@ onMounted(() => {
   box-shadow: 0 0 0 1px rgba(161, 140, 123, 0.4);
 }
 
-/* =========================================
-   3. 租件卡片列表 (Card List)
-   ========================================= */
+
+/* 3. 租件卡片列表 (Card List)*/
 .card-list {
   margin-top: 10px;
   display: flex;
@@ -289,16 +279,13 @@ onMounted(() => {
   margin-top: 6px;
   font-size: 13px;
   color: #4b5563;
-  /* 限制顯示兩行，超出變吊吊點 */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* =========================================
-   4. 小元件：收藏按鈕
-   ========================================= */
+/* 4. 小元件：收藏按鈕 */
 .favorite-small {
   border: none;
   padding: 3px 8px;
@@ -320,9 +307,7 @@ onMounted(() => {
   color: #f2e6dc;
 }
 
-/* =========================================
-   5. 彈跳視窗 (Modal) - 詳情頁
-   ========================================= */
+/* 5. 彈跳視窗 (Modal) - 詳情頁 */
 .modal-overlay {
   position: fixed;
   top: 0;

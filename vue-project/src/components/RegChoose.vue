@@ -27,8 +27,6 @@ const router = useRouter()
 
 // 處理身分選擇
 const handleSelect = (role) => {
-  // ✨ 重點：跳轉到註冊頁 (/Register)，並透過網址傳遞身分參數
-  // 網址會變成： .../Register?role=tenant
   router.push({
     path: '/Register', 
     query: { role: role } 

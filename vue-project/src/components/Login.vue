@@ -75,14 +75,14 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import api from '@/utils/api' // 假設你有這個 utils
+import api from '@/utils/api'
 
 const router = useRouter()
 
 const username = ref('')
 const password = ref('')
 const loginRole = ref('')
-const showPassword = ref(false) // ✨ 新增：控制密碼顯示狀態
+const showPassword = ref(false) 
 
 const handleLogin = async () => {
   if (!username.value || !password.value) {
@@ -170,14 +170,14 @@ label {
 
 input,
 select {
-  width: 100%; /* 確保滿版 */
+  width: 100%;
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
   font-size: 16px;
   outline: none;
   background-color: white;
-  box-sizing: border-box; /* 確保 padding 不會撐大寬度 */
+  box-sizing: border-box; 
 }
 
 input:focus,
@@ -186,19 +186,18 @@ select:focus {
   box-shadow: 0 0 0 1px rgba(161, 140, 123, 0.4);
 }
 
-/* 👇 新增樣式：密碼輸入框 wrapper */
 .password-wrapper {
   position: relative; /* 讓內部絕對定位的按鈕以此為基準 */
   display: flex;
   align-items: center;
 }
 
-/* 為了不讓文字被眼睛擋住，輸入框右邊要留點空間 */
+
 .password-wrapper input {
   padding-right: 40px; 
 }
 
-/* 👇 新增樣式：小眼睛按鈕 */
+
 .eye-btn {
   position: absolute;
   right: 10px;        /* 靠右 */

@@ -1,5 +1,5 @@
 const { bucket } = require('../firebaseConfig');
-const { v4: uuidv4 } = require('uuid'); // 如果沒安裝，請跑 npm install uuid
+const { v4: uuidv4 } = require('uuid'); 
 
 /**
  * 將 Base64 字串上傳到 Firebase Storage 並回傳公開網址
@@ -41,7 +41,6 @@ const uploadImage = async (base64String) => {
       stream.on('finish', async () => {
         // 5. 設定為公開並取得網址
         await file.makePublic();
-        // 這是公開存取的永久網址格式
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
         resolve(publicUrl);
       });

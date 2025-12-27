@@ -157,14 +157,13 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router' // 3. 引入路由工具
-import api from '@/utils/api' // 1. 引入 api 工具
+import { useRouter, useRoute } from 'vue-router'
+import api from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
 
-// 4. 從網址取得 role 參數 (例如 /Register?role=landlord)
-// 如果網址沒有參數，預設給 'tenant' 避免報錯
+// 4. 從網址取得 role 參數
 const role = computed(() => route.query.role || 'tenant')
 
 const currentStep = ref('form')
@@ -233,19 +232,17 @@ const backToEditForm = () => {
 const registerToBackend = async () => {
   try {
     // 1. 準備要傳給後端的資料 (JSON 格式)
-    // 注意：目前後端只收 JSON，圖片上傳通常需要另外處理 (例如用 FormData)，
-    // 這裡我們先只傳文字資料，確保資料庫能寫入成功。
     const payload = {
       role: role.value, // 'tenant' or 'landlord'
       name: form.value.name,
       phone: form.value.phone,
       address: form.value.address,
       gender: form.value.gender,
-      password: form.value.password // 再次提醒：正式上線前建議後端要做加密
+      password: form.value.password 
     }
 
     // 2. 發送 POST 請求給 Node.js 後端 (Port 3000)
-    const response = await api.post('/api/register', payload)
+    const response = await api.post('/api/auth/register', payload)
 
     const data = response.data
 
@@ -267,7 +264,6 @@ const registerToBackend = async () => {
 
 
 
-// ✅ 正確寫法：把呼叫後端的邏輯接上去
 
 const handleVerifyCode = async () => {
   // 1. 檢查驗證碼有沒有填
@@ -284,7 +280,6 @@ const handleVerifyCode = async () => {
   }
 
   // 3. 驗證通過，正式呼叫後端 API
-  // ✨ 這行是關鍵！一定要加 await
   await registerToBackend()
 }
 </script>

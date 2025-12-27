@@ -38,7 +38,6 @@ import { useRouter } from 'vue-router' // 3. 引入 useRouter
 const router = useRouter() // 4. 建立 router 實例
 const email = ref('')
 
-// 移除了原本的 emit = defineEmits(['back-login'])
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -67,13 +66,11 @@ const backToLogin = () => {
 </script>
 
 <style scoped>
-/* 7. 補上 page 的樣式，讓畫面置中 (跟 Login.vue 一樣) */
 .page {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* 如果 body 已經有背景色，這裡可以省略，或保留確保樣式獨立 */
   background: #f2e6dc; 
 }
 
@@ -125,7 +122,7 @@ input {
   font-size: 14px;
   outline: none;
   font-family: "Iansui", sans-serif;
-  background-color: white; /* 確保輸入框背景是白的 */
+  background-color: white;
 }
 
 input:focus {

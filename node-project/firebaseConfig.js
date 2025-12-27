@@ -2,8 +2,7 @@ require('dotenv').config();
 const admin = require("firebase-admin");
 const { getFirestore } = require("firebase-admin/firestore");
 
-// 1. 準備金鑰 (不管是從 .env 還是檔案)
-// 如果你是用 .env，請確保這裡邏輯正確
+// 1. 準備金鑰 
 const serviceAccount = {
   "type": "service_account",
   "project_id": process.env.FIREBASE_PROJECT_ID,
@@ -19,7 +18,7 @@ const serviceAccount = {
   "client_x509_cert_url": process.env.FIREBASE_CLIENT_CERT_URL
 };
 
-// 2. ★★★ 關鍵：先初始化！一定要在 db 變數之前！ ★★★
+// 2. 先初始化
 try {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -28,7 +27,6 @@ try {
   console.log("✅ Firebase 初始化成功");
 } catch (error) {
   console.error("❌ Firebase 初始化失敗 (檢查金鑰或 .env):", error.message);
-  // 如果初始化失敗，後面的 db 連線也就沒救了，可以直接丟出錯誤
   throw error;
 }
 
@@ -37,7 +35,7 @@ const db = getFirestore('oo-base');
 const bucket = admin.storage().bucket();
 const auth = admin.auth();
 
-// 4. 測試連線 (非必要，但建議留著看 Log)
+// 4. 測試連線
 db.listCollections()
   .then(() => console.log("✅ 成功連線到資料庫：oo-base"))
   .catch(err => console.error("❌ 資料庫連線失敗:", err.message));

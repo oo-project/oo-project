@@ -1,11 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../firebaseConfig');
-
-// ==========================================
 // 1. 取得房東的所有預約請求 (房東端)
-// 路徑: GET /api/appointments/landlord/:id
-// ==========================================
+
 router.get('/landlord/:id', async (req, res) => {
   try {
     const landlordId = req.params.id;
@@ -28,7 +25,6 @@ router.get('/landlord/:id', async (req, res) => {
     res.json(appointments);
   } catch (error) {
     console.error("讀取房東預約失敗:", error);
-    // 如果是索引錯誤，回傳空陣列避免前端壞掉
     if (error.code === 9 || error.message.includes('index')) {
         return res.json([]); 
     }
@@ -36,10 +32,9 @@ router.get('/landlord/:id', async (req, res) => {
   }
 });
 
-// ==========================================
-// 2. 取得租客的所有預約請求 (租客端) - 🆕 修復 404 錯誤
-// 路徑: GET /api/appointments/tenant/:id
-// ==========================================
+
+// 2. 取得租客的所有預約請求 (租客端) 
+
 router.get('/tenant/:id', async (req, res) => {
   try {
     const tenantId = req.params.id;
@@ -68,10 +63,8 @@ router.get('/tenant/:id', async (req, res) => {
   }
 });
 
-// ==========================================
+
 // 3. 建立新預約 (租客端送出申請)
-// 路徑: POST /api/appointments/add
-// ==========================================
 router.post('/add', async (req, res) => {
   try {
     const data = req.body;
@@ -92,10 +85,7 @@ router.post('/add', async (req, res) => {
   }
 });
 
-// ==========================================
 // 4. 更新預約狀態 (房東端：接受/拒絕)
-// 路徑: PATCH /api/appointments/:id/status
-// ==========================================
 router.patch('/:id/status', async (req, res) => {
   try {
     const { id } = req.params;

@@ -126,19 +126,16 @@ onMounted(async () => {
       profile.value.email = user.email || ''
       profile.value.phone = user.phone || ''
       profile.value.avatar = user.avatar || ''
-      // LocalStorage 通常沒有存 bio，先給空值
       profile.value.bio = '' 
 
-      // 2. ✨ 呼叫後端 API 取得最新的資料 (包含 bio)
+      // 2.呼叫後端 API 取得最新的資料
       try {
-        // 使用我們剛剛建立的 user API
         const response = await api.get(`/api/user/${user.id}`)
         const json = response.data
         
         if (json.success) {
-          // 更新資料 (以資料庫為準)
           profile.value.name = json.data.name
-          profile.value.bio = json.data.bio || '' // 取得自我介紹
+          profile.value.bio = json.data.bio || '' 
           if (json.data.avatar) profile.value.avatar = json.data.avatar
         }
       } catch (apiError) {
@@ -153,7 +150,7 @@ onMounted(async () => {
   }
 })
 
-// 📸 處理圖片上傳
+// 處理圖片上傳
 const handleFileChange = (event) => {
   const file = event.target.files?.[0]
   if (!file) return
@@ -171,7 +168,7 @@ const handleFileChange = (event) => {
   }
 }
 
-// 💾 儲存資料
+// 💾儲存資料
 const handleSave = async () => {
   if (!profile.value.id) return
   isSaving.value = true
@@ -181,7 +178,7 @@ const handleSave = async () => {
     name: profile.value.name,
     email: profile.value.email,
     avatar: profile.value.avatar,
-    bio: profile.value.bio,// ✨ 傳送 bio
+    bio: profile.value.bio,
     role: 'landlord'
   }
 
@@ -220,7 +217,6 @@ const handleSave = async () => {
 }
 
 const goToChangePassword = () => {
-  // 請確認您的路由是否正確設定了此路徑
   router.push('/LandlordHome/change-password') 
 }
 </script>

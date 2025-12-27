@@ -62,7 +62,6 @@
 </template>
 
 <script setup>
-// Script 部分維持原樣，不需要更動
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/utils/api'
@@ -118,7 +117,7 @@ const deleteRental = async (id) => {
 /* 列表容器 */
 .card-list { display: flex; flex-direction: column; gap: 20px; }
 
-/* ✨ 卡片本體 (橫向 Flex) */
+/*卡片本體 (橫向 Flex) */
 .rental-card {
   display: flex;
   background: white;
@@ -203,7 +202,7 @@ const deleteRental = async (id) => {
 }
 .action-btn.delete:hover { background: #fef2f2; border-color: #fca5a5; }
 
-/* ✨✨✨ 重點修改：手機版 RWD 設定 ✨✨✨ */
+/*  重點修改：手機版 RWD 設定*/
 @media (max-width: 768px) {
   .panel { padding: 12px; }
   .card-list { gap: 12px; }

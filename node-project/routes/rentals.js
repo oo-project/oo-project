@@ -2,16 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../firebaseConfig'); 
 const rentalController = require('../controllers/rentals/rentalController');
-// ==========================================
-// 🛠️ 輔助函式：移除 undefined (防止 500 錯誤)
-// ==========================================
+
 const cleanData = (obj) => {
   return JSON.parse(JSON.stringify(obj));
 };
 
-// ==========================================
 // 靜態路由 (必須放在 /:id 之前)
-// ==========================================
 
 // 1. 取得特定房東的房源列表
 router.get('/list', async (req, res) => {
@@ -21,10 +17,9 @@ router.get('/list', async (req, res) => {
 
     console.log(`🔍 搜尋房東 ${landlordId} 的房源 (Collection: houses)...`);
 
-    // 👇 修改重點：統一使用 'houses'
     const snapshot = await db.collection('houses')
       .where('landlordId', '==', landlordId)
-      // .orderBy('createdAt', 'desc') // 若後端報錯說缺索引，請先註解這行，等資料出來再去建索引
+      // .orderBy('createdAt', 'desc') 
       .get();
 
     if (snapshot.empty) {
@@ -45,7 +40,6 @@ router.get('/list', async (req, res) => {
 // 2. 取得公開房源
 router.get('/public', async (req, res) => {
   try {
-    // 👇 修改重點：統一使用 'houses'
     const snapshot = await db.collection('houses')
       .where('isPublished', '==', true)
       .limit(20)
@@ -74,7 +68,6 @@ router.post('/delete', async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ success: false, error: "缺少 ID" });
 
-    // 👇 修改重點：統一使用 'houses'
     await db.collection('houses').doc(id).delete();
     
     console.log(`🗑️ 房源 ${id} 已刪除`);
@@ -106,7 +99,6 @@ router.post('/add', async (req, res) => {
         // 2. 清洗資料
         const safeData = cleanData(rawData);
 
-        // 3. 👇 修改重點：寫入 'houses'
         const docRef = await db.collection('houses').add(safeData);
         
         console.log(`✅ 新增成功，ID: ${docRef.id}`);
@@ -133,7 +125,7 @@ router.post('/update', async (req, res) => {
 
         const safeData = cleanData(rawData);
 
-        // 👇 修改重點：更新 'houses'
+
         await db.collection('houses').doc(id).update(safeData);
 
         console.log(`✅ 更新成功: ${id}`);
@@ -144,9 +136,8 @@ router.post('/update', async (req, res) => {
     }
 });
 
-// ==========================================
 // 動態路由 (最後面)
-// ==========================================
+
 
 // 7. 取得單一房源詳情
 router.get('/:id', async (req, res) => {
@@ -154,7 +145,6 @@ router.get('/:id', async (req, res) => {
     const rentalId = req.params.id;
     if (['list', 'public', 'amenities', 'add', 'update', 'delete'].includes(rentalId)) return;
 
-    // 👇 修改重點：查詢 'houses'
     const doc = await db.collection('houses').doc(rentalId).get();
 
     if (!doc.exists) {

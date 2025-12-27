@@ -218,7 +218,7 @@ const removePhoto = (index) => {
   form.images.splice(index, 1)
 }
 
-// ✨ 修正重點：儲存邏輯 ✨
+// 儲存邏輯 ✨
 const handleSave = async () => {
   // 1. 驗證必填
   if (!form.title || !form.address || !form.price) {
@@ -226,7 +226,7 @@ const handleSave = async () => {
     return
   }
 
-  // 2. ✨✨✨ 這裡必須定義 user 變數！ ✨✨✨
+  // 2. 定義 user
   const userStr = localStorage.getItem('currentUser')
   if (!userStr) {
     alert('登入逾時，請重新登入')
@@ -271,7 +271,6 @@ const goBack = () => router.back()
 </script>
 
 <style scoped>
-/* ✨ 全域設定：確保 padding 不會撐開寬度 */
 * {
   box-sizing: border-box;
 }
@@ -309,7 +308,6 @@ const goBack = () => router.back()
   border-radius: 16px;
   padding: 32px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  /* ✨ 關鍵：防止內容過寬時撐開容器 */
   min-width: 0; 
   width: 100%;
 }
@@ -391,7 +389,7 @@ input:focus, select:focus, textarea:focus { border-color: #a18c7b; box-shadow: 0
 
 .divider { border: none; border-top: 1px solid #eee; margin: 16px 0; }
 
-/* ✨✨✨ RWD 手機版優化 ✨✨✨ */
+/* RWD 手機版優化 */
 @media (max-width: 768px) {
   .editor-container {
     padding: 12px; /* 減少外層留白 */
@@ -404,7 +402,7 @@ input:focus, select:focus, textarea:focus { border-color: #a18c7b; box-shadow: 0
   }
 
   .main-form {
-    padding: 20px 16px; /* ✨ 減少內距，這最重要，不然會爆版 */
+    padding: 20px 16px; 
   }
 
   /* 讓租金和押金那一行變成上下排列 */

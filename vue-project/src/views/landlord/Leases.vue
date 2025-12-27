@@ -239,7 +239,6 @@ onMounted(() => {
   fetchRentals()
 })
 
-// ✅ 修正後的取得合約 (支援過濾)
 const fetchLeases = async () => {
   try {
     loading.value = true
@@ -347,7 +346,7 @@ const getLocalDateString = (date) => {
     return localDate.toISOString().split('T')[0]
 }
 
-// ✅ 修正後的建立租約 (寫入 landlordId)
+
 const confirmAddLease = async () => {
   const { rentalTitle, tenantName, price, months, address, otherTerms, depositMonths, depositFee } = tempLeaseForm.value
 
@@ -390,7 +389,7 @@ const confirmAddLease = async () => {
     otherTerms: otherTerms || '',
     status: 'approved',
     landlordName: myName,
-    landlordId: myId // ✅ 關鍵修正：將合約歸屬於這個 ID
+    landlordId: myId
   }
 
   try {
@@ -399,7 +398,7 @@ const confirmAddLease = async () => {
     alert("租約建立成功！正在為您開啟合約 PDF...")
     if (pdfUrl) window.open(pdfUrl, '_blank')
     closeAddModal()
-    fetchLeases() // 重新整理列表
+    fetchLeases()
   } catch (error) {
     console.error(error)
     alert("建立失敗: " + (error.response?.data?.error || error.message))

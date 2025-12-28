@@ -63,7 +63,7 @@ const submitBooking = async () => {
     isSubmitting.value = true
     
     // 呼叫後端 API
-    const response = await api.post('/api/appointments/create', {
+    const response = await api.post('/api/appointments/add', {
     rentalId: props.rental.id,
     rentalTitle: props.rental.title,
     landlordId: props.rental.landlordId,

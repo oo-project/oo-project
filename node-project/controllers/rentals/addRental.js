@@ -53,12 +53,8 @@ const addRental = async (req, res) => {
       landlordId,
       title,
       address,
-      
-      // ✅ 強制寫入數字，確保欄位不會是 undefined
       lat: Number(finalLat),
       lng: Number(finalLng),
-
-      // ✅ 存入圖片網址陣列
       images: imageUrls, 
 
       type: type || '獨立套房',

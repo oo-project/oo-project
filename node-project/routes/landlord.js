@@ -6,7 +6,7 @@ const chatController = require('../controllers/landlord/chatController');
 router.get('/tenants', tenantsController.getTenants);
 
 router.put('/tenants/:id', tenantsController.updateTenant);
-
+router.post('/tenants', tenantsController.addTenant);
 router.post('/send', chatController.sendMessage);
 router.get('/history', chatController.getChatHistory);
 module.exports = router;

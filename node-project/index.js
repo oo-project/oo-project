@@ -50,8 +50,8 @@ app.use('/api/favorites', favoriteRoutes);      // 我的收藏
 app.use('/api/bot', botRoutes);                  // AI 聊天機器人
 
 // 4. 啟動伺服器
-//const PORT = process.env.PORT || 3000;
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+//const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ 後端伺服器運作中：http://0.0.0.0:${PORT}`);
 });
